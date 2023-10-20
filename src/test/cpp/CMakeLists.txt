@@ -1,0 +1,2 @@
+add_subdirectory(FileCmp)
+add_test(FileCmpTest FileCmpTest)

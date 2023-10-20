@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "FileCmp/FileCmp.hpp"
+
 int main() {
-    std::cout << "Hello, world!" << std::endl;
+    
 }
