@@ -14,7 +14,7 @@ FileCmp::FileCmp(std::filesystem::path first_file, std::filesystem::path second_
     }
 }
 
-size_t GetFileSize(std::filesystem::path file) {
+static size_t GetFileSize(std::filesystem::path file) {
     std::ifstream file_read_stream(file.string().c_str(), std::ios::binary | std::ios::ate);
     size_t size = file_read_stream.tellg();
     file_read_stream.close();
