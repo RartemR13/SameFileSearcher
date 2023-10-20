@@ -14,10 +14,18 @@ FileCmp::FileCmp(std::filesystem::path first_file, std::filesystem::path second_
     }
 }
 
-std::vector<char>* FileCmp::createFileStorage(std::filesystem::path file) {
+size_t GetFileSize(std::filesystem::path file) {
     std::ifstream file_read_stream(file.string().c_str(), std::ios::binary | std::ios::ate);
+    size_t size = file_read_stream.tellg();
+    file_read_stream.close();
 
-    std::vector<char>* storage_ptr = new std::vector<char>(file_read_stream.tellg());
+    return size;
+}
+
+std::vector<char>* FileCmp::createFileStorage(std::filesystem::path file) {
+    std::ifstream file_read_stream(file.string().c_str(), std::ios::binary);
+
+    std::vector<char>* storage_ptr = new std::vector<char>(GetFileSize(file));
     file_read_stream.read(storage_ptr->data(), storage_ptr->size());
     file_read_stream.close();
 
@@ -28,8 +36,8 @@ bool FileCmp::checkMatch(const std::vector<char>& first, const std::vector<char>
                          size_t first_pos, size_t second_pos) {
     
     size_t len = scale_parametr_;
-    len = std::min(len, first.size() - first_pos);
-    len = std::min(len, second.size() - second_pos);
+    len = std::min(len, first.size() - first_pos + 1);
+    len = std::min(len, second.size() - second_pos + 1);
 
     size_t l = first_pos - 1;
     size_t r = second_pos - 1;
@@ -38,6 +46,9 @@ bool FileCmp::checkMatch(const std::vector<char>& first, const std::vector<char>
         if (first[l] != second[r]) {
             return false;
         }
+
+        l++;
+        r++;
     }
 
     return true;
@@ -53,7 +64,7 @@ size_t FileCmp::evaluate() {
     delete second_storage_ptr;
 
     size_t first_size = first_storage.size() / scale_parametr_ + (first_storage.size() % scale_parametr_ > 0);
-    size_t second_size = first_storage.size() / scale_parametr_ + (first_storage.size() % scale_parametr_ > 0);
+    size_t second_size = second_storage.size() / scale_parametr_ + (second_storage.size() % scale_parametr_ > 0);
 
     std::vector<std::vector<size_t>> levenstein_dist(first_size + 1, 
         std::vector<size_t>(second_size + 1, std::numeric_limits<size_t>::max()));
